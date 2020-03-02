@@ -1,0 +1,220 @@
+emptyStack:
+	<VERIFICA DACA STIVA E NULA>
+emptyList: 
+	<VERIFICA DACA LISTA E NULA>
+isNumber: 
+	<VERIFICA DACA CARACTERUL DIN CELULA E CIFRA>
+initStack:
+	<INITIALIZEAZA STIVA>
+push: 
+	<ADAUGA O CELULA IN STIVA>
+pop:
+	<SCOATE O CELULA DIN STIVA>
+initList:
+	<INITIALIZEAZA LISTA>
+addCharacter:
+	<ADAUGA O CELULA DUPA O ANUMITA POZITIE DIN LISTA>
+backSpace:
+	<EXECUTA COMANDA BACKSPACE LA O ANUMITA POZITIE>
+	-parcurge lista pana ajunge la precedesorul pozitiei necesare
+	-memoreaza pozitia ce trebuie stearsa
+	-precedentul pozitiei il leaga cu succesorul sau
+	-elibereaza pozitia
+	-returneaza noua pozitie
+delete:
+	<EXECUTA COMANDA DELETE LA O ANUMITA POZITIE>
+	-predecesorul celulei ce urmeaza a fi sterse e position
+	-memoreaza pozitia ce urmeaza sa fie stearsa
+	-predecesorului pozitiei ii face legatura cu succesorul sau
+	-elibereaza pozitia ce trebuia stearsa
+	-returneaza noua pozitie
+determineLine:
+	<DETERMINA LINIA PE CARE SE AFLA CURSORUL>	
+	-linia e egalata cu 0;
+	-cat timp aux e diferit de pozitia urmata de position
+	 (position fiid pozitia dinnaintea cursorului)
+		-daca caracterul de pe pozitia aux este NEW LINE
+			-incrementeaza linia;
+	-returneaza numarul liniei
+gotoCharacter:
+	<EXECUTA COMANDA GO TO CHARACTER>
+	-daca argumenul liniei este 0 
+		-determina linia
+	-cat timp contorul liniei nu este egal cu linie
+		-daca pozitia urmatoare e NEW LINE
+			-incrementeaza contorul liniei
+	-cat timp contorul coloanei este diferit de coloana
+		-incrementeaza coloana
+	-returneaza pozitia noua
+deleteLine:
+	<EXECUTA COMANDA DELETE LINE>
+	-daca lina este 0
+		-determina linia
+	-cat timp contorul liniei nu este egal cu linie
+		-daca caracterul urmatoarei celule este NEW LINE
+			-incrementeaza contorul liniei
+	-cat timp caracterul celulei urmatoare e diferit de NEW LINE
+		-sterge urmatorul caracter
+	-daca urmatoarele doua caractere sunt diferite de NULL
+		-sterge urmatorul caracter
+	-returneaza noua pozitie prin intermediul functiei gotoCharacter
+replace:
+	<EXECUTA COMANDA REPLACE>
+	-cat timp lista care contine cuvantul ce trebuie inlocuit nu e NULL
+		-cat timp caracterul celulei urmatoare nu e egal cu primul caracter al listei care contine cuvantul ce trebuie inlocuit
+			-parcurge lista
+		-memoreaza pozitia actuala
+		-cat timp lista ce trebuie inlocuita e diferita de NULL si caracterele celor doua liste coincid
+			-parcurge ambele liste
+		-daca lista ce trebuie inlocuita nu e NULL
+			-pozitia revine in celula initiala a cuvantului
+			-pozitia listei revine la succesorul pozitie de unde a inceput
+		-cat timp lista ce trebuie inlocuita nu e NULL
+			-sterge caracterul din lista principala
+			-elibereaza celula din lista temporara
+		-returneaza pozitia de unde incepe sirul
+saveFile:
+	<SALVEAZA IN FISIER TEXTUL CURENT>
+	-deschide fisierul
+	-incepe cu celula a doua a listei(prima este utilizata pe post de santinela)
+	-cat timp urmatoarea celula nu e NULL (ultima celula e utilizate pe post de santinela)
+		introduce caracterele in fisier
+	-inchide fisierul
+Implimentation:
+	<IMPLEMENTEAZA COMENZILE DE EDITARE>
+	-initializeaza lista cu NEW LINE(utilizata pe post santinela)
+	-adauga la lista NEW LINE(utilizata pe post de santinela)
+	-cat timp stiva nu e goala
+		-cat timp nu intalneste ::
+			-adauga caracterele in lista si le sterge din stiva
+		-sterge din stiva "::i" si NEW LINE
+		-cat timp nu intalneste "::" si caracterul 'q'
+			-daca caracterul din stiva e 's'
+				-apeleaza functia saveFile
+				-sterge caracterul 's' si NEW LINE din stiva
+			-daca caracterul din stiva e 'r'
+				-sterge "re" si spatiul din stiva
+				-initializeaza un temporar cu urmatorul caractersi il sterge din stiva
+				-cat timp nu intalneste spatiu
+					-adauga la tmp caracterul si il sterge din stiva
+				-sterge spatiul din stiva
+				-apeleaza functia replace in position
+				-cat timp nu intalneste NEW LINE
+					-adauga caracterul din al doilea cuvant la lista si il sterge din stiva
+				-sterge NEW LINE din stiva
+			-daca caracterul e 'b'
+				-apeleaza in position functia backspace
+				-sterge din stiva 'b' si NEW LINE
+			-daca caracterul este "d"
+				-sterge "d"
+				-daca urmatorul caracter e 'l'
+					-sterge 'l' si NEW LINE/spatiul din stiva
+					-determina arguentul
+					-daca argumentul exista 
+						-sterge NEW LINE din stiva
+					-apeleaza in position functia deleteLine
+				-altfel
+					-sterge NEW LINE/spatiul din stiva
+					-determina arguentul	 
+					-daca argumentul(number) exista 
+						-sterge NEW LINE din stiva
+						-apeleaza in position functia delete de number ori
+					-atfel
+						-apleaza in position functia delete
+			-daca caracterul este "g"
+				-sterge "g" din stiva
+				-daca urmatorul caracter e 'l'
+					-sterge caracterul 'l' si spatiul
+					-determina argumentul 		
+					-sterge NEW LINE din stiva
+					-apeleaza in position functia gotoCharacter, coloana fiind 1
+				-altfel
+					-sterge "c" si spatiul din stiva
+					-determina argumentul(coloana)	 
+					-sterge NEW LINE/spatiul din stiva
+					-determina arguemtul(linie)
+					-daca argumentul exista 
+						-sterge NEW LINE din stiva
+					-apeleaza in position functia gotoCharacter
+		-sterge din stiva "::i" si NEW LINE
+	-elibereaza memoria din lista si stiva
+undoRedo:
+	<EXECUTA COMENZILE UNDO-REDO>
+	-variabile command_state ii atribuie comanda
+	-variabilei save_state ii atribuie OFF
+	-cat timp stiva nu e NULL
+		-daca caracterul este 's', este o comanda si pana acum nu a fost inatlnit(OFF)
+			-adauga in stiva noua 'q', NEW LINE, 's', NEW LINE
+			-sterge 's' si NEW LINE din stiva
+			-trece starea lui save in ON
+			-elimina comenzile de undo si redo de pana acum 
+		-daca caracterul e 'k', este o comanda si nu exsta rezerva de undo
+			-stergel pe 'k' din stiva
+			-cat timp caracterul nu e NEW LINE
+				-adauga caracterul in stiva noua si stergel din stiva
+		-daca caracterul e 'r' si este o comanda
+			-sterge din stiva 'r' si NEW LINE
+			-incrementeaza undo_redo
+		-daca caracterul e 'u' si este o comanda	
+			-sterge din stiva 'u' si NEW LINE
+			-daca a existat un redo anterior
+				-decrementeaz undo_redo
+			-altfel
+				-incrementeaza undo
+		-altfel
+			-daca a existat anterior comanda undo
+				-daca e caracterul 's'
+					-adauga-l in stiva noua si strege-l din stiva	
+				-daca e "i::"
+					-cat timp nu intalneste "::"
+						-daca stiva->next->next e NULL 
+							-sterge din stiva
+							-adauga "::i" in stiva noua	
+						-sterge din stiva caracterul
+			-daca e caracterul 'b'
+				-sterge din stiva 'b' si NEW LINE
+				-decrementeaza undo
+			-daca e caracterul 'k'
+				-cat timp nu e NEW LINE
+					-sterge din stiva caracterul
+				-sterge din stiva NEW LINE
+				-decrementeaza undo
+			-daca e numar
+				-sterge-l din stiva
+				-daca e "ld", "lg" sau "cg"
+					-sterge caracterele si NEW LINE din stiva
+				-daca e "d"
+					-sterge caracterul si NEW LINE din stiva
+		-altfel
+			-daca intalneste "i::"
+				-schimba modul din comanda in insert, sau invers
+			-adauga caracterul in stiva noua sisterge-l din stiva	
+	-apeleaza functia Implementation
+scanText:
+	<CITESTE CARACTERELE SI LE INCLUD EINTR-O STIVA>
+	-initializez stiva cu NEW LINE(celula utilizata pe post de santinela)
+	-cat timp nu se indeplineste(caracter = 'q' si e stare comanda)
+		-citeste caracterul
+		-daca e NEW LINE si mod comanda
+			-incrementeaza num_command
+		-daca e 'e' si in stiva ultima introdusa e 'r' si e stare comanda
+			-cat nu intalneste NEW LINE
+				-adauga in stiva
+			-adauga un 'k'(pentru a putea identifica comanda "re" in dfunctia undoRedo)
+		-daca e 's' si stare comanda
+			-num_command = -1
+		-daca intalneste "::"
+			-schimba starea comenzii
+			-daca se schimba in starea Insert
+				-decrementeaza num_command
+		-daca num_command e 5
+			-adauga in stiva NEW LINE si 's'
+			-num_command = 0
+		-daca stiva are un singur element - NEW LINE
+			-strege-l(elimina santinela)
+		-adauga caracterul citit in stiva
+	-adauga new_line in stiva
+	-apeleaza functia undoRedo
+main:
+	<FUNCTIA PRINCIPALA>
+	apeleaza functia scanText
